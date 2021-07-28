@@ -1,11 +1,15 @@
 require 'rails_helper'
-RSpec.describe "Tasks", type: :model do
-      describe 'Validation test' do
-      context 'If the task title is empty' do
-        it 'Validation will be 1000000000000000000000000000 ' do
-          task = Task.new(title: '', content: 'Failure test')
-        expect(task).not_to be_valid
-        end
+describe 'Task model function', type: :model do
+  describe 'Search function' do
+    # You can change the contents of the test data as needed.
+    let!(:task) { FactoryBot.create(:task, title: 'task') }
+    let!(:second_task) { FactoryBot.create(:second_task, title: "sample") }
+    context 'Title is performed by scope method' do
+      it "Tasks containing search keywords are narrowed down" do
+        # title_seach is a Title search method presented by scope. The method name can be arbitrary.
+        expect(Task.title_search('task')).to include(task)
+        expect(Task.title_search('task')).not_to include(second_task)
+        expect(Task.title_search('task').count).to eq 1
       end
       context 'If the content is empty' do
         it 'Validation is caught' do
