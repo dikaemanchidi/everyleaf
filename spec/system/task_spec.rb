@@ -4,7 +4,7 @@ RSpec.describe 'Task management function', type: :system do
     context 'When creating a new task' do
       it 'Should display created task' do
         visit new_task_path
-        fill_in 'Title', with: 'Task1'
+        fill_in 'task_name', with: 'Task1'
         fill_in 'Content', with: 'details'
         click_button 'Create Task'
         expect(page).to have_content 'Task was successfully created.'
@@ -17,18 +17,18 @@ RSpec.describe 'Task management function', type: :system do
       end
     end
     context 'When tasks are arranged in descending order of creation date and time' do
-      it 'New task is displayed at the top' do
-        assert Task.all.order(created_at: :desc)
+     it 'New task is displayed at the top' do
+       assert Task.all.order(created_at: :desc)
+     end
+   end
+ end
+ describe 'Detailed display function' do
+    context 'When transitioned to any task details screen' do
+      it 'The content of the relevant task is displayed' do
+        task = FactoryBot.create(:task, task_name: 'task1', content: 'content1')
+        visit tasks_path(task)
+        expect(page).to have_content 'task1'
       end
     end
-  end
-  describe 'Detailed display function' do
-     context 'When transitioned to any task details screen' do
-       it 'The content of the relevant task is displayed' do
-         task = FactoryBot.create(:task, title: 'task1', content: 'content1')
-         visit tasks_path(task)
-         expect(page).to have_content 'task1'
-       end
-     end
-  end
+ end
 end

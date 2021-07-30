@@ -1,16 +1,29 @@
 <p id="notice"><%= notice %></p>
 
 <h4>Task List</h4>
+<nav class="navbar navbar-light bg-grey">
+<%= form_with( model: Task.new , url: tasks_path, method: :get, local: true) do |form|%>
+
+  <%= form.label :Name： %>
+  <%= form.text_field :task_name , placeholder: "Search...", class: "form-control mr-sm-2"%>,
+  <%= form.label :status, "Status:" %>
+  <%= form.select :status, options_for_select([[''],['Not started'], ['In progress'], ['Completed']]), class: "form-control mr-sm-2"%>
+  <%= form.submit 'search' %>
+<% end %>
+</nav>
 <button type="button" class="btn btn-info" id="sort_startdate"><%= link_to "Sort by end deadline", tasks_path(sort_expired: "true") %></button>
    <button type="button" class="btn btn-info" id="sort_priority"><%= link_to "Sort by priority", tasks_path(sort_priority: "true") %></button>
-<table>
+   <div class="table-responsive-xl">
+ <table class="table">
   <thead>
     <tr>
       <th>Task Name</th>
 
       <th>Task Details</th>
      <th>priority</th>
+     <th>status</th>
      <th>deadline</th>
+     <th>status</th>
       <th></th>
       <th colspan="3"></th>
     </tr>
@@ -19,21 +32,23 @@
   <tbody>
     <% @tasks.each do |task| %>
       <tr>
-        <td><%= task.title %></td>
+        <td><%= task.task_name %></td>
 
         <td><%= task.content %></td>
         <td><%= task.priority %></td>
+        <td><%= task.status %></td>
           <td><%= task.startdate %></td>
+          <td><%= task.status %></td>
+        <td><%= link_to 'Show', task, class:"btn btn-success" %></td>
 
-        <td><%= link_to 'Show', task %></td>
-        
-        <td><%= link_to 'Edit', edit_task_path(task) %></td>
+        <td><%= link_to 'Edit', edit_task_path(task), class:"btn btn-warning" %></td>
 
-        <td><%= link_to 'Destroy', task, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Destroy', task, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger" %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
+</div>
 <%= paginate @tasks %>
 <br>
 

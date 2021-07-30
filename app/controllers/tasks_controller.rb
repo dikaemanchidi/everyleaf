@@ -4,13 +4,24 @@ class TasksController < ApplicationController
   # GET /tasks
   # GET /tasks.json
   def index
-    if params[:sort_expired]
-      @tasks = Task.all.order('startdate DESC').page params[:page]
-      elsif params[:sort_priority]
-        @tasks = Task.all.order('priority DESC').page params[:page]
-    else
-     @tasks = Task.all.order("created_at DESC").page(params[:page])
-    end
+    if params[:task].present?
+        if params[:task][:task_name].present? && params[:task][:status].present?
+          @tasks = Task.task_name_fuzzy_search(params[:task][:task_name]).status_search(params[:task][:status]).page params[:page]
+        elsif params[:task][:task_name].present?
+          @tasks = Task.task_name_fuzzy_search(params[:task][:task_name]).page params[:page]
+  elsif params[:task][:status].present?
+          @tasks = Task.status_search(params[:task][:status]).page params[:page]
+        else
+          @tasks = Task.page(params[:page]).per(10)
+        end
+      elsif params[:sort_expired]
+          @tasks = Task.all.order('startdate DESC').page params[:page]
+        elsif params[:sort_priority]
+      @tasks = Task.all.order('priority DESC').page params[:page]
+  else
+      @tasks = Task.all.order('created_at DESC').page params[:page]
+      @tasks = @tasks.order(created_at: :desc).page(params[:page])
+  end
    end
   # GET /tasks/1
   # GET /tasks/1.json
@@ -74,6 +85,6 @@ class TasksController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def task_params
-      params.require(:task).permit(:title, :content, :id, :startdate, :status, :priority)
+      params.require(:task).permit(:task_name, :content, :id, :startdate, :status, :priority)
     end
 end

@@ -16,14 +16,14 @@ ActiveRecord::Schema.define(version: 2021_07_27_161608) do
   enable_extension "plpgsql"
 
   create_table "tasks", force: :cascade do |t|
-    t.string "title"
+    t.string "task_name"
     t.string "content"
     t.string "text"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.datetime "startdate"
     t.integer "priority", default: 0
-    t.string "status", default: "pending"
+    t.string "status"
     t.string "search"
     t.index ["search"], name: "index_tasks_on_search"
   end

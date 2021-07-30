@@ -13,7 +13,7 @@
 <%= link_to 'general', tasks_path %>
   <div class="field">
     <%= form.label :title %>
-    <%= form.text_field :title %>
+    <%= form.text_field :task_name %>
   </div>
 
   <div class="field">
@@ -28,7 +28,7 @@
 
   <div class="field">
     <%= form.label :status %>
-    <%= form.select :status, [['Not yet started', 'Not yet started'],['in progress', 'in progress'], ['completed', 'completed']] %>
+    <%= form.select :status, [['Not started', 'Not started'],['In progress', 'In progress'], ['Completed', 'Completed']] %>
   </div>
 
   <div class="field">
