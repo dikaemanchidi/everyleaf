@@ -1,8 +1,9 @@
 class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :destroy]
+  before_action :current_user
+  before_action :authenticate_user
+  before_action :logged_in?
 
-  # GET /tasks
-  # GET /tasks.json
   def index
     if params[:task].present?
         if params[:task][:task_name].present? && params[:task][:status].present?
@@ -19,28 +20,38 @@ class TasksController < ApplicationController
         elsif params[:sort_priority]
       @tasks = Task.all.order('priority DESC').page params[:page]
   else
-      @tasks = Task.all.order('created_at DESC').page params[:page]
+      @tasks = current_user.tasks.all.order('created_at DESC').page params[:page]
       @tasks = @tasks.order(created_at: :desc).page(params[:page])
   end
    end
-  # GET /tasks/1
-  # GET /tasks/1.json
+
+
   def show
+    if current_user.id != @task.user_id
+      flash[:notice] = "Not Allowed!"
+      redirect_to tasks_path(session[:task_user])
+      return
+    end
   end
 
-  # GET /tasks/new
+
   def new
     @task = Task.new
   end
 
-  # GET /tasks/1/edit
+
   def edit
+    if current_user.id != @task.user_id
+      flash[:notice] = "Not Allowed!"
+      redirect_to tasks_path(session[:task_user])
+      return
+    end
   end
 
-  # POST /tasks
-  # POST /tasks.json
+
   def create
     @task = Task.new(task_params)
+     @task.user_id = current_user.id
 
     respond_to do |format|
       if @task.save
@@ -53,8 +64,7 @@ class TasksController < ApplicationController
     end
   end
 
-  # PATCH/PUT /tasks/1
-  # PATCH/PUT /tasks/1.json
+
   def update
     respond_to do |format|
       if @task.update(task_params)
@@ -67,8 +77,7 @@ class TasksController < ApplicationController
     end
   end
 
-  # DELETE /tasks/1
-  # DELETE /tasks/1.json
+
   def destroy
     @task.destroy
     respond_to do |format|
@@ -78,12 +87,18 @@ class TasksController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+
     def set_task
-      @task = Task.find(params[:id])
+      @task = current_user.Task.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
+    def authenticate_user
+          if @current_user == nil
+            flash[:notice] = t('notice.login_needed')
+            redirect_to new_session_path
+          end
+        end
+
     def task_params
       params.require(:task).permit(:task_name, :content, :id, :startdate, :status, :priority)
     end
